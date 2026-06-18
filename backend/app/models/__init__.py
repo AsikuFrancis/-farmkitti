@@ -3,5 +3,5 @@ from .farmer import Farmer, Gender
 from .farm import Farm, Crop, CropStatus
 from .disease import DiseaseReport, SeverityLevel
 from .weather import WeatherData
-from .community import CommunityGroup, CommunityPost, PostComment
+from .community import CommunityGroup, CommunityPost, PostComment, GroupMember
 from .message import Conversation, Message

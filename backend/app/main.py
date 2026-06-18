@@ -21,6 +21,13 @@ app.add_middleware(
 async def root():
     return {"message": "Welcome to the Farmkiti API"}
 
+@app.on_event("startup")
+async def startup_event():
+    from app.database import engine, Base
+    import app.models  # Ensure all models are loaded
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
 from app.api.v1.router import api_router
 
 # We will include routers here later
