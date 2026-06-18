@@ -32,7 +32,7 @@ class UserUpdate(BaseModel):
     language_pref: Optional[str] = None
 
 class UserInDBBase(UserBase):
-    id: UUID
+    id: str
     is_active: bool
     language_pref: str
     created_at: datetime

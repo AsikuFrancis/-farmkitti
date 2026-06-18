@@ -1,8 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional, List, Dict, Any
-from uuid import UUID
 from datetime import datetime, date
-from app.models.farm import CropStatus
 
 class CropBase(BaseModel):
     crop_type: str
@@ -11,7 +9,7 @@ class CropBase(BaseModel):
     actual_harvest_date: Optional[date] = None
     irrigation_type: Optional[str] = None
     soil_type: Optional[str] = None
-    status: CropStatus = CropStatus.planned
+    status: str = "planned"
 
 class CropCreate(CropBase):
     pass
@@ -19,11 +17,11 @@ class CropCreate(CropBase):
 class CropUpdate(CropBase):
     crop_type: Optional[str] = None
     planting_date: Optional[date] = None
-    status: Optional[CropStatus] = None
+    status: Optional[str] = None
 
 class CropInDBBase(CropBase):
-    id: UUID
-    farm_id: UUID
+    id: str
+    farm_id: str
     created_at: datetime
     
     model_config = ConfigDict(from_attributes=True)
@@ -49,8 +47,8 @@ class FarmUpdate(FarmBase):
     is_active: Optional[bool] = None
 
 class FarmInDBBase(FarmBase):
-    id: UUID
-    farmer_id: UUID
+    id: str
+    farmer_id: str
     is_active: bool
     created_at: datetime
     

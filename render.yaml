@@ -4,7 +4,7 @@ services:
     plan: free
     env: python
     rootDir: backend
-    buildCommand: "pip install -r requirements.txt && alembic upgrade head"
+    buildCommand: "pip install -r requirements.txt"
     startCommand: "gunicorn app.main:app -w 4 -k uvicorn.workers.UvicornWorker"
     envVars:
       - key: DATABASE_URL

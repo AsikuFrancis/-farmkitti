@@ -1,7 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 from typing import List, Optional
 from datetime import date, datetime
-from uuid import UUID
 
 class WeatherForecastDaily(BaseModel):
     date: date
@@ -20,7 +19,7 @@ class WeatherForecastResponse(BaseModel):
     daily_forecasts: List[WeatherForecastDaily]
 
 class WeatherDataInDB(BaseModel):
-    id: UUID
+    id: str
     county: str
     latitude: float
     longitude: float
