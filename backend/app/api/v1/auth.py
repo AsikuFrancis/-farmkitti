@@ -39,3 +39,22 @@ async def login(login_data: LoginRequest, db: AsyncSession = Depends(get_db)) ->
         
     access_token = security.create_access_token(subject=user.id)
     return {"access_token": access_token, "token_type": "bearer"}
+
+@router.post("/verify-otp", response_model=Token)
+async def verify_otp(otp_data: dict, db: AsyncSession = Depends(get_db)) -> Any:
+    """
+    Mock OTP verification. In production, verify against SMS provider.
+    """
+    phone = otp_data.get("phone")
+    otp = otp_data.get("otp")
+    
+    # Accept any 6 digit OTP for the MVP
+    if not otp or len(otp) < 6:
+        raise HTTPException(status_code=400, detail="Invalid OTP")
+        
+    user = await auth_service.get_user_by_phone(db, phone=phone)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    access_token = security.create_access_token(subject=user.id)
+    return {"access_token": access_token, "token_type": "bearer"}
