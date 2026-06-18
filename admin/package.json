@@ -1,0 +1,11 @@
+{
+  "name": "farmkitti-admin",
+  "version": "1.0.0",
+  "description": "Farmkitti AgriTech Admin Dashboard",
+  "scripts": {
+    "start": "npx serve -s . -l 3000",
+    "dev": "npx serve -s . -l 3000 --no-clipboard"
+  },
+  "keywords": ["farmkitti", "agritech", "admin", "dashboard"],
+  "license": "MIT"
+}

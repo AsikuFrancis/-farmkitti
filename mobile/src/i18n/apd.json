@@ -1,0 +1,30 @@
+{
+  "common": {
+    "welcome": "Mara haba fi Farmkiti",
+    "login": "Dukul",
+    "register": "Sajil",
+    "submit": "Arusil",
+    "cancel": "Alegi",
+    "loading": "Bia shil...",
+    "error": "Moshkila hasal",
+    "success": "Najah!"
+  },
+  "auth": {
+    "phone": "Ragam ta telefun",
+    "password": "Kalimat sir",
+    "forgot_password": "Ita nesa kalimat sir?",
+    "otp_prompt": "Kutu ragam sitta to ja fi telefun taki"
+  },
+  "dashboard": {
+    "title": "Dashbord",
+    "my_farms": "Zuraati",
+    "recent_activity": "Shugul ta hassa",
+    "weather": "Hala ta jo"
+  },
+  "disease": {
+    "scan_crop": "Sura zuraa",
+    "take_photo": "Shil sura",
+    "upload_gallery": "Jibu min galari",
+    "results": "Natija"
+  }
+}

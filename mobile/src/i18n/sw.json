@@ -1,0 +1,30 @@
+{
+  "common": {
+    "welcome": "Karibu Farmkiti",
+    "login": "Ingia",
+    "register": "Jisajili",
+    "submit": "Wasilisha",
+    "cancel": "Ghairi",
+    "loading": "Inapakia...",
+    "error": "Hitilafu imetokea",
+    "success": "Mafanikio!"
+  },
+  "auth": {
+    "phone": "Nambari ya Simu",
+    "password": "Nenosiri",
+    "forgot_password": "Umesahau Nenosiri?",
+    "otp_prompt": "Ingiza nambari yenye tarakimu 6 iliyotumwa kwa simu yako"
+  },
+  "dashboard": {
+    "title": "Dashibodi",
+    "my_farms": "Mashamba Yangu",
+    "recent_activity": "Shughuli za Hivi Karibuni",
+    "weather": "Utabiri wa Hali ya Hewa"
+  },
+  "disease": {
+    "scan_crop": "Changanua Zao",
+    "take_photo": "Piga Picha",
+    "upload_gallery": "Pakia kutoka kwenye Matunzio",
+    "results": "Matokeo ya Uchambuzi"
+  }
+}

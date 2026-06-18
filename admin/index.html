@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Farmkitti Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg-primary:#0a0f1a;--bg-secondary:#111827;--bg-card:rgba(17,24,39,0.7);
+  --border:rgba(52,211,153,0.15);--border-hover:rgba(52,211,153,0.3);
+  --emerald:#10b981;--emerald-dark:#059669;--emerald-light:#34d399;--emerald-glow:rgba(16,185,129,0.15);
+  --amber:#f59e0b;--red:#ef4444;--blue:#3b82f6;--purple:#8b5cf6;
+  --text-primary:#f1f5f9;--text-secondary:#94a3b8;--text-muted:#64748b;
+  --sidebar-w:260px;--radius:12px;--radius-sm:8px;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg-primary);color:var(--text-primary);min-height:100vh;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+
+/* ===== LOGIN ===== */
+#login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#0a0f1a 0%,#064e3b 50%,#0a0f1a 100%);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s,visibility .5s}
+#login-screen.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.login-box{background:var(--bg-card);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:20px;padding:48px;width:420px;max-width:90vw;box-shadow:0 25px 60px rgba(0,0,0,0.5),0 0 80px var(--emerald-glow)}
+.login-box h1{font-size:28px;font-weight:800;background:linear-gradient(135deg,var(--emerald-light),var(--emerald));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin-bottom:4px}
+.login-box .subtitle{color:var(--text-secondary);text-align:center;margin-bottom:32px;font-size:14px}
+.login-box .logo-icon{text-align:center;font-size:48px;margin-bottom:16px}
+.form-group{margin-bottom:20px}
+.form-group label{display:block;font-size:13px;font-weight:500;color:var(--text-secondary);margin-bottom:6px}
+.form-group input,.form-group select{width:100%;padding:12px 16px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:14px;font-family:inherit;transition:border-color .2s,box-shadow .2s}
+.form-group input:focus,.form-group select:focus{outline:none;border-color:var(--emerald);box-shadow:0 0 0 3px var(--emerald-glow)}
+.form-group select option{background:var(--bg-secondary);color:var(--text-primary)}
+.btn-login{width:100%;padding:14px;background:linear-gradient(135deg,var(--emerald),var(--emerald-dark));color:#fff;border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:600;cursor:pointer;transition:transform .15s,box-shadow .2s;font-family:inherit}
+.btn-login:hover{transform:translateY(-1px);box-shadow:0 8px 25px rgba(16,185,129,0.3)}
+.demo-note{margin-top:20px;padding:12px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:var(--radius-sm);font-size:12px;color:var(--text-secondary);text-align:center}
+.demo-note strong{color:var(--emerald-light)}
+
+/* ===== LAYOUT ===== */
+#app{display:none;min-height:100vh}
+#app.visible{display:flex}
+.sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--bg-secondary);border-right:1px solid var(--border);padding:24px 0;display:flex;flex-direction:column;z-index:100;transition:transform .3s}
+.sidebar-brand{padding:0 24px 24px;border-bottom:1px solid var(--border);margin-bottom:8px}
+.sidebar-brand h2{font-size:20px;font-weight:800;background:linear-gradient(135deg,var(--emerald-light),var(--emerald));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sidebar-brand span{font-size:11px;color:var(--text-muted);font-weight:500;letter-spacing:1px;text-transform:uppercase}
+.nav-section{padding:16px 12px 8px;font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 24px;margin:2px 12px;border-radius:var(--radius-sm);font-size:14px;font-weight:500;color:var(--text-secondary);cursor:pointer;transition:all .2s;position:relative}
+.nav-item:hover{background:var(--emerald-glow);color:var(--text-primary)}
+.nav-item.active{background:linear-gradient(135deg,rgba(16,185,129,0.15),rgba(16,185,129,0.05));color:var(--emerald-light);font-weight:600}
+.nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:24px;background:var(--emerald);border-radius:0 4px 4px 0}
+.nav-icon{font-size:18px;width:24px;text-align:center}
+.nav-spacer{flex:1}
+.main{margin-left:var(--sidebar-w);flex:1;padding:32px;min-height:100vh}
+
+/* ===== HEADER ===== */
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px}
+.page-header h1{font-size:26px;font-weight:700}
+.page-header p{color:var(--text-secondary);font-size:14px;margin-top:4px}
+.header-actions{display:flex;gap:12px;align-items:center}
+.btn{padding:10px 20px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .2s;display:inline-flex;align-items:center;gap:6px;justify-content:center}
+.btn-primary{background:linear-gradient(135deg,var(--emerald),var(--emerald-dark));color:#fff}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(16,185,129,0.3)}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text-secondary)}
+.btn-outline:hover{border-color:var(--emerald);color:var(--emerald-light)}
+.btn-danger{background:rgba(239,68,68,0.1);color:var(--red);border:1px solid rgba(239,68,68,0.2)}
+.btn-danger:hover{background:rgba(239,68,68,0.2)}
+
+/* ===== CARDS ===== */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;margin-bottom:32px}
+.stat-card{background:var(--bg-card);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:var(--radius);padding:24px;transition:transform .2s,border-color .3s,box-shadow .3s;position:relative;overflow:hidden}
+.stat-card:hover{transform:translateY(-3px);border-color:var(--border-hover);box-shadow:0 12px 40px rgba(0,0,0,0.3)}
+.stat-card::after{content:'';position:absolute;top:0;right:0;width:80px;height:80px;border-radius:50%;filter:blur(40px);opacity:0.15}
+.stat-card:nth-child(1)::after{background:var(--emerald)}
+.stat-card:nth-child(2)::after{background:var(--blue)}
+.stat-card:nth-child(3)::after{background:var(--amber)}
+.stat-card:nth-child(4)::after{background:var(--purple)}
+.stat-icon{font-size:32px;margin-bottom:12px}
+.stat-value{font-size:32px;font-weight:800;line-height:1}
+.stat-label{font-size:13px;color:var(--text-secondary);margin-top:6px}
+.stat-change{font-size:12px;font-weight:600;margin-top:8px}
+.stat-change.up{color:var(--emerald-light)}
+.stat-change.down{color:var(--red)}
+
+/* ===== TABLES ===== */
+.card{background:var(--bg-card);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:24px}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.card-header h3{font-size:16px;font-weight:600}
+.search-input{padding:9px 14px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:13px;font-family:inherit;width:260px;transition:border-color .2s}
+.search-input:focus{outline:none;border-color:var(--emerald)}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:12px 16px;font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border)}
+td{padding:14px 16px;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.03)}
+tr:hover td{background:rgba(16,185,129,0.03)}
+.badge{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}
+.badge-green{background:rgba(16,185,129,0.15);color:var(--emerald-light)}
+.badge-yellow{background:rgba(245,158,11,0.15);color:var(--amber)}
+.badge-red{background:rgba(239,68,68,0.15);color:var(--red)}
+.badge-blue{background:rgba(59,130,246,0.15);color:var(--blue)}
+
+/* Action Buttons */
+.action-btn{background:transparent;border:none;color:var(--text-secondary);cursor:pointer;padding:4px 8px;border-radius:4px;transition:background 0.2s,color 0.2s}
+.action-btn:hover{background:rgba(255,255,255,0.1);color:var(--text-primary)}
+.action-btn.edit:hover{color:var(--blue)}
+.action-btn.delete:hover{color:var(--red)}
+
+/* ===== CHARTS ===== */
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}
+.bar-chart{display:flex;align-items:flex-end;gap:12px;height:200px;padding-top:20px}
+.bar-col{display:flex;flex-direction:column;align-items:center;flex:1;gap:8px}
+.bar{width:100%;border-radius:6px 6px 0 0;transition:height .8s cubic-bezier(.4,0,.2,1);position:relative}
+.bar:hover{filter:brightness(1.2)}
+.bar-label{font-size:11px;color:var(--text-muted);white-space:nowrap}
+.bar-value{font-size:11px;font-weight:700;color:var(--text-primary)}
+
+/* ===== ACTIVITY FEED ===== */
+.activity-list{list-style:none}
+.activity-item{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.03);align-items:flex-start}
+.activity-dot{width:8px;height:8px;border-radius:50%;margin-top:6px;flex-shrink:0}
+.activity-text{font-size:13px;color:var(--text-secondary);line-height:1.5}
+.activity-text strong{color:var(--text-primary)}
+.activity-time{font-size:11px;color:var(--text-muted);margin-top:4px}
+
+/* ===== ERP SYNC ===== */
+.sync-status{display:flex;align-items:center;gap:16px;padding:20px;background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.2);border-radius:var(--radius);margin-bottom:24px}
+.sync-dot{width:12px;height:12px;border-radius:50%;background:var(--emerald);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,0.4)}50%{box-shadow:0 0 0 8px rgba(16,185,129,0)}}
+.sync-info h4{font-size:14px;font-weight:600}
+.sync-info p{font-size:12px;color:var(--text-secondary)}
+
+/* ===== SETTINGS ===== */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.setting-group{margin-bottom:20px}
+.setting-group label{display:block;font-size:13px;font-weight:500;color:var(--text-secondary);margin-bottom:6px}
+
+/* ===== MODAL ===== */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:200}
+.modal-overlay.active{display:flex}
+.modal{background:var(--bg-secondary);border:1px solid var(--border);border-radius:16px;padding:32px;width:500px;max-width:90vw;animation:modalIn .3s;max-height:90vh;overflow-y:auto}
+@keyframes modalIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+.modal h3{font-size:18px;font-weight:700;margin-bottom:20px}
+.modal-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:24px}
+
+/* View Modal Details */
+.view-details{display:flex;flex-direction:column;gap:16px;background:rgba(255,255,255,0.02);padding:20px;border-radius:8px;border:1px solid rgba(255,255,255,0.05)}
+.view-row{display:flex;justify-content:space-between;border-bottom:1px dashed rgba(255,255,255,0.1);padding-bottom:8px}
+.view-row:last-child{border-bottom:none;padding-bottom:0}
+.view-label{color:var(--text-secondary);font-size:13px;font-weight:500}
+.view-value{color:var(--text-primary);font-size:14px;font-weight:600;text-align:right}
+
+/* ===== PAGE SECTIONS ===== */
+.page-section{display:none;animation:fadeIn .3s}
+.page-section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1024px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .chart-grid,.settings-grid{grid-template-columns:1fr}
+}
+
+/* ===== CUSTOM POPUPS (TOAST & CONFIRM) ===== */
+.toast-container{position:fixed;bottom:24px;right:24px;display:flex;flex-direction:column;gap:12px;z-index:9999;pointer-events:none}
+.toast{background:var(--bg-card);backdrop-filter:blur(16px);border:1px solid var(--border);border-left:4px solid var(--emerald);border-radius:var(--radius-sm);padding:16px 20px;color:var(--text-primary);font-size:14px;font-weight:500;box-shadow:0 10px 30px rgba(0,0,0,0.5);display:flex;align-items:center;gap:12px;transform:translateX(120%);animation:slideInToast 0.3s forwards, fadeOutToast 0.3s forwards 2.7s}
+.toast.error{border-left-color:var(--red)}
+.toast.info{border-left-color:var(--blue)}
+@keyframes slideInToast{to{transform:translateX(0)}}
+@keyframes fadeOutToast{to{opacity:0;transform:translateY(10px)}}
+
+.confirm-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:9999}
+.confirm-modal-overlay.active{display:flex}
+.confirm-modal{background:var(--bg-secondary);border:1px solid var(--border);border-radius:16px;padding:32px;width:400px;max-width:90vw;animation:modalIn 0.3s;text-align:center}
+.confirm-icon{font-size:48px;margin-bottom:16px}
+.confirm-modal h3{font-size:18px;font-weight:700;margin-bottom:12px;color:var(--text-primary)}
+.confirm-modal p{font-size:14px;color:var(--text-secondary);margin-bottom:24px}
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN SCREEN ===== -->
+<div id="login-screen">
+<div class="login-box">
+  <div class="logo-icon">🌱</div>
+  <h1>Farmkitti Admin</h1>
+  <p class="subtitle">Agricultural Platform Management Console</p>
+  <div class="form-group">
+    <label>Email Address</label>
+    <input type="email" id="login-email" value="admin@farmkitti.com" placeholder="admin@farmkitti.com">
+  </div>
+  <div class="form-group">
+    <label>Password</label>
+    <input type="password" id="login-pass" value="admin123" placeholder="••••••••">
+  </div>
+  <button class="btn-login" onclick="doLogin()">Sign In to Dashboard</button>
+  <div class="demo-note">Demo credentials: <strong>admin@farmkitti.com</strong> / <strong>admin123</strong></div>
+</div>
+</div>
+
+<!-- ===== APP SHELL ===== -->
+<div id="app">
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <h2>🌱 Farmkitti</h2>
+    <span>Admin Console v1.0</span>
+  </div>
+  <div class="nav-section">Main</div>
+  <div class="nav-item active" data-page="dashboard"><span class="nav-icon">📊</span>Dashboard</div>
+  <div class="nav-item" data-page="farmers"><span class="nav-icon">👨‍🌾</span>Farmers</div>
+  <div class="nav-item" data-page="farms"><span class="nav-icon">🌾</span>Farms</div>
+  <div class="nav-item" data-page="diseases"><span class="nav-icon">🦠</span>Disease Reports</div>
+  <div class="nav-section">System</div>
+  <div class="nav-item" data-page="analytics"><span class="nav-icon">📈</span>Analytics</div>
+  <div class="nav-item" data-page="erp"><span class="nav-icon">🔄</span>ERP Sync</div>
+  <div class="nav-item" data-page="settings"><span class="nav-icon">⚙️</span>Settings</div>
+  <div class="nav-spacer"></div>
+  <div class="nav-item" onclick="doLogout()"><span class="nav-icon">🚪</span>Sign Out</div>
+</aside>
+
+<!-- Main Content -->
+<main class="main">
+
+<!-- ===== DASHBOARD ===== -->
+<section class="page-section active" id="page-dashboard">
+  <div class="page-header">
+    <div><h1>Dashboard</h1><p>Welcome back, Administrator</p></div>
+    <div class="header-actions">
+      <span style="color:var(--text-muted);font-size:13px" id="current-date"></span>
+    </div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-icon">👨‍🌾</div><div class="stat-value" id="s-farmers">0</div><div class="stat-label">Total Farmers</div><div class="stat-change up">↑ 12% this month</div></div>
+    <div class="stat-card"><div class="stat-icon">🌾</div><div class="stat-value" id="s-farms">0</div><div class="stat-label">Total Farms</div><div class="stat-change up">↑ 8% this month</div></div>
+    <div class="stat-card"><div class="stat-icon">🦠</div><div class="stat-value" id="s-scans">0</div><div class="stat-label">Disease Scans Today</div><div class="stat-change down">↓ 3% vs yesterday</div></div>
+    <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-value" id="s-communities">0</div><div class="stat-label">Active Communities</div><div class="stat-change up">↑ 5 new this week</div></div>
+  </div>
+  <div class="chart-grid">
+    <div class="card">
+      <div class="card-header"><h3>Farmer Registrations (Monthly)</h3></div>
+      <div class="bar-chart" id="reg-chart"></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Recent Activity</h3></div>
+      <ul class="activity-list" id="activity-feed"></ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FARMERS ===== -->
+<section class="page-section" id="page-farmers">
+  <div class="page-header">
+    <div><h1>Farmers Management</h1><p>Manage registered farmers across South Sudan</p></div>
+    <div class="header-actions">
+      <input type="text" class="search-input" placeholder="Search farmers..." oninput="filterTable('farmers-table',this.value)">
+      <button class="btn btn-primary" onclick="openFarmerForm()">+ Add Farmer</button>
+    </div>
+  </div>
+  <div class="card"><table id="farmers-table"><thead><tr><th>Name</th><th>Phone</th><th>Location</th><th>Farms</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead><tbody></tbody></table></div>
+</section>
+
+<!-- ===== FARMS ===== -->
+<section class="page-section" id="page-farms">
+  <div class="page-header">
+    <div><h1>Farms Management</h1><p>All registered agricultural plots</p></div>
+    <div class="header-actions">
+      <input type="text" class="search-input" placeholder="Search farms..." oninput="filterTable('farms-table',this.value)">
+      <button class="btn btn-primary" onclick="openFarmForm()">+ Add Farm</button>
+    </div>
+  </div>
+  <div class="card"><table id="farms-table"><thead><tr><th>Farm Name</th><th>Owner</th><th>Size (ha)</th><th>Crop</th><th>Location</th><th>Status</th><th>Actions</th></tr></thead><tbody></tbody></table></div>
+</section>
+
+<!-- ===== DISEASE REPORTS ===== -->
+<section class="page-section" id="page-diseases">
+  <div class="page-header">
+    <div><h1>Disease Reports</h1><p>AI-powered crop disease detection results</p></div>
+    <div class="header-actions">
+      <input type="text" class="search-input" placeholder="Search reports..." oninput="filterTable('disease-table',this.value)">
+    </div>
+  </div>
+  <div class="card"><table id="disease-table"><thead><tr><th>Date</th><th>Farmer</th><th>Crop</th><th>Disease Detected</th><th>Confidence</th><th>Status</th></tr></thead><tbody></tbody></table></div>
+</section>
+
+<!-- ===== ANALYTICS ===== -->
+<section class="page-section" id="page-analytics">
+  <div class="page-header">
+    <div><h1>Analytics</h1><p>Platform-wide agricultural insights</p></div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-icon">🌍</div><div class="stat-value">6</div><div class="stat-label">Active Regions</div></div>
+    <div class="stat-card"><div class="stat-icon">🌿</div><div class="stat-value">12</div><div class="stat-label">Crop Varieties Tracked</div></div>
+    <div class="stat-card"><div class="stat-icon">🔬</div><div class="stat-value">847</div><div class="stat-label">Total AI Scans</div></div>
+    <div class="stat-card"><div class="stat-icon">📱</div><div class="stat-value">94%</div><div class="stat-label">Mobile Adoption Rate</div></div>
+  </div>
+  <div class="chart-grid">
+    <div class="card">
+      <div class="card-header"><h3>Farmers by Region</h3></div>
+      <div class="bar-chart" id="region-chart"></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Crops by Type</h3></div>
+      <div class="bar-chart" id="crop-chart"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><h3>Disease Detection Frequency</h3></div>
+    <div class="bar-chart" id="disease-chart" style="height:180px"></div>
+  </div>
+</section>
+
+<!-- ===== ERP SYNC ===== -->
+<section class="page-section" id="page-erp">
+  <div class="page-header">
+    <div><h1>ERP Sync</h1><p>Synchronize data with ERPNext administrative backend</p></div>
+    <div class="header-actions">
+      <button class="btn btn-primary" id="sync-btn" onclick="triggerSync()">🔄 Trigger Manual Sync</button>
+    </div>
+  </div>
+  <div class="sync-status">
+    <div class="sync-dot"></div>
+    <div class="sync-info">
+      <h4>System Connected</h4>
+      <p id="last-sync-time">Last sync: 2026-06-17 12:34:00 UTC</p>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><h3>Sync History</h3></div>
+    <table id="sync-table"><thead><tr><th>Timestamp</th><th>Type</th><th>Records</th><th>Status</th><th>Duration</th></tr></thead>
+    <tbody>
+      <tr><td>2026-06-17 12:34:00</td><td>Full Sync</td><td>234 farmers, 189 farms</td><td><span class="badge badge-green">Success</span></td><td>4.2s</td></tr>
+      <tr><td>2026-06-17 06:00:00</td><td>Scheduled</td><td>12 farmers, 8 farms</td><td><span class="badge badge-green">Success</span></td><td>1.1s</td></tr>
+      <tr><td>2026-06-16 18:00:00</td><td>Scheduled</td><td>5 farmers, 3 farms</td><td><span class="badge badge-green">Success</span></td><td>0.8s</td></tr>
+      <tr><td>2026-06-16 12:00:00</td><td>Manual</td><td>220 farmers, 178 farms</td><td><span class="badge badge-green">Success</span></td><td>3.9s</td></tr>
+      <tr><td>2026-06-16 06:00:00</td><td>Scheduled</td><td>0 records</td><td><span class="badge badge-yellow">No Changes</span></td><td>0.3s</td></tr>
+    </tbody></table>
+  </div>
+</section>
+
+<!-- ===== SETTINGS ===== -->
+<section class="page-section" id="page-settings">
+  <div class="page-header">
+    <div><h1>Settings</h1><p>System configuration and preferences</p></div>
+    <div class="header-actions"><button class="btn btn-primary" onclick="showToast('Settings saved successfully!')">Save Changes</button></div>
+  </div>
+  <div class="settings-grid">
+    <div class="card">
+      <div class="card-header"><h3>API Configuration</h3></div>
+      <div class="setting-group"><label>Backend API URL</label><input value="http://localhost:8000"></div>
+      <div class="setting-group"><label>ERPNext URL</label><input value="https://erp.farmkitti.com"></div>
+      <div class="setting-group"><label>API Key</label><input type="password" value="sk_live_farmkitti_key_here"></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>System Information</h3></div>
+      <div class="setting-group"><label>Platform Version</label><input value="Farmkitti v1.0.0" disabled></div>
+      <div class="setting-group"><label>Backend Framework</label><input value="FastAPI 0.115.x" disabled></div>
+      <div class="setting-group"><label>Database</label><input value="PostgreSQL 16 / SQLite (dev)" disabled></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Language & Locale</h3></div>
+      <div class="setting-group"><label>Default Language</label><select><option>English</option><option>Juba Arabic (عربي جوبا)</option><option>Kiswahili</option></select></div>
+      <div class="setting-group"><label>Timezone</label><select><option>Africa/Juba (UTC+2)</option><option>Africa/Nairobi (UTC+3)</option><option>Africa/Kampala (UTC+3)</option></select></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Notifications</h3></div>
+      <div class="setting-group"><label>SMS Provider</label><select><option>Africa's Talking (Sandbox)</option><option>Twilio</option></select></div>
+      <div class="setting-group"><label>SMS API Key</label><input type="password" value="mock_key_here"></div>
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<!-- ===== FARMER CRUD MODALS ===== -->
+<div class="modal-overlay" id="farmer-form-modal">
+<div class="modal">
+  <h3 id="farmer-modal-title">Add New Farmer</h3>
+  <input type="hidden" id="f-id">
+  <div class="form-group"><label>Full Name</label><input id="f-name" placeholder="e.g. Akol Deng Mawien"></div>
+  <div class="form-group"><label>Phone Number</label><input id="f-phone" placeholder="+211 9XX XXX XXX"></div>
+  <div class="form-group"><label>Location</label>
+    <select id="f-loc"><option>Juba</option><option>Bor</option><option>Malakal</option><option>Wau</option><option>Yambio</option><option>Rumbek</option></select>
+  </div>
+  <div class="form-group"><label>Status</label>
+    <select id="f-status"><option value="active">Active</option><option value="pending">Pending</option><option value="inactive">Inactive</option></select>
+  </div>
+  <div class="form-group"><label>Farms Owned</label><input type="number" id="f-farms" value="0"></div>
+  <div class="modal-actions">
+    <button class="btn btn-outline" onclick="closeModal('farmer-form-modal')">Cancel</button>
+    <button class="btn btn-primary" onclick="saveFarmer()">Save Farmer</button>
+  </div>
+</div>
+</div>
+
+<div class="modal-overlay" id="farmer-view-modal">
+<div class="modal">
+  <h3>Farmer Details</h3>
+  <div class="view-details" id="farmer-view-content"></div>
+  <div class="modal-actions">
+    <button class="btn btn-outline" onclick="closeModal('farmer-view-modal')">Close</button>
+  </div>
+</div>
+</div>
+
+<!-- ===== FARM CRUD MODALS ===== -->
+<div class="modal-overlay" id="farm-form-modal">
+<div class="modal">
+  <h3 id="farm-modal-title">Add New Farm</h3>
+  <input type="hidden" id="farm-id">
+  <div class="form-group"><label>Farm Name</label><input id="farm-name" placeholder="e.g. Riverside Plot"></div>
+  <div class="form-group"><label>Owner Name</label><input id="farm-owner" placeholder="e.g. Akol Deng Mawien"></div>
+  <div class="form-group"><label>Location</label>
+    <select id="farm-loc"><option>Juba</option><option>Bor</option><option>Malakal</option><option>Wau</option><option>Yambio</option><option>Rumbek</option></select>
+  </div>
+  <div class="form-group"><label>Primary Crop</label><input id="farm-crop" placeholder="e.g. Sorghum"></div>
+  <div class="form-group"><label>Size (ha)</label><input type="number" step="0.1" id="farm-size" value="1.0"></div>
+  <div class="form-group"><label>Status</label>
+    <select id="farm-status"><option value="active">Active</option><option value="fallow">Fallow</option><option value="inactive">Inactive</option></select>
+  </div>
+  <div class="modal-actions">
+    <button class="btn btn-outline" onclick="closeModal('farm-form-modal')">Cancel</button>
+    <button class="btn btn-primary" onclick="saveFarm()">Save Farm</button>
+  </div>
+</div>
+</div>
+
+<div class="modal-overlay" id="farm-view-modal">
+<div class="modal">
+  <h3>Farm Details</h3>
+  <div class="view-details" id="farm-view-content"></div>
+  <div class="modal-actions">
+    <button class="btn btn-outline" onclick="closeModal('farm-view-modal')">Close</button>
+  </div>
+</div>
+</div>
+
+<!-- ===== CUSTOM CONFIRM MODAL ===== -->
+<div class="confirm-modal-overlay" id="custom-confirm-modal">
+<div class="confirm-modal">
+  <div class="confirm-icon">⚠️</div>
+  <h3>Confirm Action</h3>
+  <p id="confirm-message">Are you sure you want to proceed?</p>
+  <div class="modal-actions" style="justify-content:center">
+    <button class="btn btn-outline" onclick="closeConfirm()">Cancel</button>
+    <button class="btn btn-danger" id="confirm-action-btn">Yes, Proceed</button>
+  </div>
+</div>
+</div>
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+// ===== CUSTOM POPUPS =====
+function showToast(message, type="success") {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+  toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.remove(); }, 3000);
+}
+
+let confirmCallback = null;
+function customConfirm(message, callback) {
+  document.getElementById('confirm-message').textContent = message;
+  confirmCallback = callback;
+  document.getElementById('custom-confirm-modal').classList.add('active');
+}
+function closeConfirm() {
+  document.getElementById('custom-confirm-modal').classList.remove('active');
+  confirmCallback = null;
+}
+document.getElementById('confirm-action-btn').addEventListener('click', () => {
+  if(confirmCallback) confirmCallback();
+  closeConfirm();
+});
+
+// ===== IN-MEMORY CRUD DATA =====
+// Replaced const with let so we can manipulate arrays
+let FARMERS = [
+  {id: 1, name:'Akol Deng Mawien',phone:'+211 912 345 678',location:'Juba',farms:3,status:'active',joined:'2026-01-15'},
+  {id: 2, name:'Nyabol Kuol Atem',phone:'+211 923 456 789',location:'Bor',farms:2,status:'active',joined:'2026-02-03'},
+  {id: 3, name:'Machar Bol Nyuon',phone:'+211 934 567 890',location:'Malakal',farms:1,status:'active',joined:'2026-02-20'},
+  {id: 4, name:'Achol Garang Dut',phone:'+211 945 678 901',location:'Wau',farms:4,status:'active',joined:'2026-03-08'},
+  {id: 5, name:'Deng Ayii Akok',phone:'+211 956 789 012',location:'Yambio',farms:2,status:'pending',joined:'2026-03-22'},
+  {id: 6, name:'Nyandit Tut Koak',phone:'+211 967 890 123',location:'Rumbek',farms:1,status:'active',joined:'2026-04-01'},
+  {id: 7, name:'Kuol Manyang Ajak',phone:'+211 978 901 234',location:'Juba',farms:5,status:'active',joined:'2026-04-12'},
+  {id: 8, name:'Ayen Chol Mayen',phone:'+211 989 012 345',location:'Bor',farms:2,status:'active',joined:'2026-04-28'},
+];
+let nextFarmerId = 9;
+
+let FARMS = [
+  {id: 1, name:'Riverside Plot A',owner:'Akol Deng Mawien',size:2.5,crop:'Sorghum',location:'Juba',status:'active'},
+  {id: 2, name:'Hilltop Maize Field',owner:'Nyabol Kuol Atem',size:1.8,crop:'Maize',location:'Bor',status:'active'},
+  {id: 3, name:'Malakal Groundnut',owner:'Machar Bol Nyuon',size:3.2,crop:'Groundnuts',location:'Malakal',status:'active'},
+  {id: 4, name:'Western Cassava',owner:'Achol Garang Dut',size:4.1,crop:'Cassava',location:'Wau',status:'active'},
+  {id: 5, name:'Yambio Rice Paddy',owner:'Deng Ayii Akok',size:2.0,crop:'Rice',location:'Yambio',status:'fallow'},
+];
+let nextFarmId = 6;
+
+const DISEASES = [
+  {date:'2026-06-17',farmer:'Akol Deng Mawien',crop:'Sorghum',disease:'Anthracnose',confidence:94,status:'confirmed'},
+  {date:'2026-06-17',farmer:'Nyabol Kuol Atem',crop:'Maize',disease:'Fall Armyworm',confidence:88,status:'confirmed'},
+  {date:'2026-06-17',farmer:'Achol Garang Dut',crop:'Cassava',disease:'Cassava Mosaic',confidence:91,status:'confirmed'},
+  {date:'2026-06-16',farmer:'Kuol Manyang Ajak',crop:'Vegetables',disease:'Leaf Blight',confidence:72,status:'review'},
+  {date:'2026-06-16',farmer:'Deng Ayii Akok',crop:'Rice',disease:'Rice Blast',confidence:85,status:'confirmed'},
+];
+
+// Activity and Charts Data
+const ACTIVITIES = [
+  {text:'<strong>Akol Deng Mawien</strong> registered a new farm in Juba',time:'2 min ago',color:'var(--emerald)'},
+  {text:'AI detected <strong>Anthracnose</strong> on sorghum crop (94% confidence)',time:'15 min ago',color:'var(--red)'},
+  {text:'<strong>Nyabol Kuol Atem</strong> joined the Bor Farming Community',time:'1 hour ago',color:'var(--blue)'},
+  {text:'ERP sync completed: <strong>234 farmers</strong> synchronized',time:'2 hours ago',color:'var(--purple)'},
+];
+const REG_DATA = [{m:'Jan',v:45},{m:'Feb',v:72},{m:'Mar',v:98},{m:'Apr',v:134},{m:'May',v:187},{m:'Jun',v:234}];
+const REGION_DATA = [{m:'Juba',v:89},{m:'Bor',v:52},{m:'Malakal',v:38},{m:'Wau',v:27},{m:'Yambio',v:16},{m:'Rumbek',v:12}];
+const CROP_DATA = [{m:'Sorghum',v:78},{m:'Maize',v:65},{m:'Cassava',v:42},{m:'Groundnuts',v:35},{m:'Sesame',v:28},{m:'Rice',v:22},{m:'Millet',v:18}];
+const DISEASE_DATA = [{m:'Armyworm',v:34},{m:'Mosaic',v:28},{m:'Anthracnose',v:22},{m:'Blight',v:18},{m:'Blast',v:15},{m:'Healthy',v:96}];
+
+// ===== LOGIN & PERSISTENCE =====
+function doLogin() {
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('app').classList.add('visible');
+  localStorage.setItem('farmkitti_admin_auth', 'true');
+}
+
+function doLogout() {
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('app').classList.remove('visible');
+  localStorage.removeItem('farmkitti_admin_auth');
+}
+
+// Check session on load
+if(localStorage.getItem('farmkitti_admin_auth') === 'true') {
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('app').classList.add('visible');
+}
+
+// ===== NAVIGATION =====
+document.querySelectorAll('.nav-item[data-page]').forEach(item=>{
+  item.addEventListener('click',()=>{
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    item.classList.add('active');
+    document.querySelectorAll('.page-section').forEach(p=>p.classList.remove('active'));
+    document.getElementById('page-'+item.dataset.page).classList.add('active');
+  });
+});
+
+// ===== RENDER HELPERS =====
+function statusBadge(s){
+  const m={active:'badge-green',pending:'badge-yellow',inactive:'badge-red',fallow:'badge-yellow',confirmed:'badge-red',review:'badge-yellow',clean:'badge-green'};
+  return `<span class="badge ${m[s]||'badge-blue'}">${s.charAt(0).toUpperCase()+s.slice(1)}</span>`;
+}
+function confBadge(v){
+  const cls=v>=85?'badge-green':v>=70?'badge-yellow':'badge-red';
+  return `<span class="badge ${cls}">${v}%</span>`;
+}
+
+// ===== FARMER CRUD =====
+function renderFarmersTable(){
+  const tbody = document.querySelector('#farmers-table tbody');
+  tbody.innerHTML = FARMERS.map(r=>`
+    <tr>
+      <td><strong>${r.name}</strong></td>
+      <td>${r.phone}</td>
+      <td>${r.location}</td>
+      <td>${r.farms}</td>
+      <td>${statusBadge(r.status)}</td>
+      <td>${r.joined}</td>
+      <td>
+        <button class="action-btn" onclick="viewFarmer(${r.id})" title="View">👁️</button>
+        <button class="action-btn edit" onclick="openFarmerForm(${r.id})" title="Edit">✏️</button>
+        <button class="action-btn delete" onclick="deleteFarmer(${r.id})" title="Delete">🗑️</button>
+      </td>
+    </tr>
+  `).join('');
+  document.getElementById('s-farmers').textContent = FARMERS.length;
+}
+
+function openFarmerForm(id = null){
+  const isEdit = id !== null;
+  document.getElementById('farmer-modal-title').textContent = isEdit ? 'Edit Farmer' : 'Add New Farmer';
+  
+  if(isEdit){
+    const f = FARMERS.find(x => x.id === id);
+    document.getElementById('f-id').value = f.id;
+    document.getElementById('f-name').value = f.name;
+    document.getElementById('f-phone').value = f.phone;
+    document.getElementById('f-loc').value = f.location;
+    document.getElementById('f-status').value = f.status;
+    document.getElementById('f-farms').value = f.farms;
+  } else {
+    document.getElementById('f-id').value = '';
+    document.getElementById('f-name').value = '';
+    document.getElementById('f-phone').value = '';
+    document.getElementById('f-loc').value = 'Juba';
+    document.getElementById('f-status').value = 'active';
+    document.getElementById('f-farms').value = '0';
+  }
+  openModal('farmer-form-modal');
+}
+
+function saveFarmer(){
+  const idStr = document.getElementById('f-id').value;
+  const name = document.getElementById('f-name').value;
+  const phone = document.getElementById('f-phone').value;
+  const location = document.getElementById('f-loc').value;
+  const status = document.getElementById('f-status').value;
+  const farms = parseInt(document.getElementById('f-farms').value) || 0;
+  
+  if(!name || !phone) { showToast("Name and phone are required!", "error"); return; }
+
+  if(idStr) { // UPDATE
+    const id = parseInt(idStr);
+    const idx = FARMERS.findIndex(x => x.id === id);
+    if(idx > -1) {
+      FARMERS[idx] = { ...FARMERS[idx], name, phone, location, status, farms };
+      showToast("Farmer updated successfully!");
+    }
+  } else { // CREATE
+    const newFarmer = {
+      id: nextFarmerId++,
+      name, phone, location, status, farms,
+      joined: new Date().toISOString().split('T')[0]
+    };
+    FARMERS.push(newFarmer);
+    showToast("New farmer added successfully!");
+  }
+  renderFarmersTable();
+  closeModal('farmer-form-modal');
+}
+
+function viewFarmer(id){
+  const f = FARMERS.find(x => x.id === id);
+  if(!f) return;
+  const content = `
+    <div class="view-row"><span class="view-label">ID</span><span class="view-value">F-${f.id}</span></div>
+    <div class="view-row"><span class="view-label">Full Name</span><span class="view-value">${f.name}</span></div>
+    <div class="view-row"><span class="view-label">Phone</span><span class="view-value">${f.phone}</span></div>
+    <div class="view-row"><span class="view-label">Location</span><span class="view-value">${f.location}</span></div>
+    <div class="view-row"><span class="view-label">Farms Owned</span><span class="view-value">${f.farms}</span></div>
+    <div class="view-row"><span class="view-label">Status</span><span class="view-value">${statusBadge(f.status)}</span></div>
+    <div class="view-row"><span class="view-label">Join Date</span><span class="view-value">${f.joined}</span></div>
+  `;
+  document.getElementById('farmer-view-content').innerHTML = content;
+  openModal('farmer-view-modal');
+}
+
+function deleteFarmer(id){
+  const f = FARMERS.find(x => x.id === id);
+  if(!f) return;
+  customConfirm(`Are you sure you want to delete the farmer: ${f.name}?`, () => {
+    FARMERS = FARMERS.filter(x => x.id !== id);
+    renderFarmersTable();
+    showToast(`Farmer deleted.`, "info");
+  });
+}
+
+// ===== FARM CRUD =====
+function renderFarmsTable(){
+  const tbody = document.querySelector('#farms-table tbody');
+  tbody.innerHTML = FARMS.map(r=>`
+    <tr>
+      <td><strong>${r.name}</strong></td>
+      <td>${r.owner}</td>
+      <td>${r.size}</td>
+      <td>${r.crop}</td>
+      <td>${r.location}</td>
+      <td>${statusBadge(r.status)}</td>
+      <td>
+        <button class="action-btn" onclick="viewFarm(${r.id})" title="View">👁️</button>
+        <button class="action-btn edit" onclick="openFarmForm(${r.id})" title="Edit">✏️</button>
+        <button class="action-btn delete" onclick="deleteFarm(${r.id})" title="Delete">🗑️</button>
+      </td>
+    </tr>
+  `).join('');
+  document.getElementById('s-farms').textContent = FARMS.length;
+}
+
+function openFarmForm(id = null){
+  const isEdit = id !== null;
+  document.getElementById('farm-modal-title').textContent = isEdit ? 'Edit Farm' : 'Add New Farm';
+  
+  if(isEdit){
+    const f = FARMS.find(x => x.id === id);
+    document.getElementById('farm-id').value = f.id;
+    document.getElementById('farm-name').value = f.name;
+    document.getElementById('farm-owner').value = f.owner;
+    document.getElementById('farm-loc').value = f.location;
+    document.getElementById('farm-crop').value = f.crop;
+    document.getElementById('farm-size').value = f.size;
+    document.getElementById('farm-status').value = f.status;
+  } else {
+    document.getElementById('farm-id').value = '';
+    document.getElementById('farm-name').value = '';
+    document.getElementById('farm-owner').value = '';
+    document.getElementById('farm-loc').value = 'Juba';
+    document.getElementById('farm-crop').value = '';
+    document.getElementById('farm-size').value = '1.0';
+    document.getElementById('farm-status').value = 'active';
+  }
+  openModal('farm-form-modal');
+}
+
+function saveFarm(){
+  const idStr = document.getElementById('farm-id').value;
+  const name = document.getElementById('farm-name').value;
+  const owner = document.getElementById('farm-owner').value;
+  const location = document.getElementById('farm-loc').value;
+  const crop = document.getElementById('farm-crop').value;
+  const size = parseFloat(document.getElementById('farm-size').value) || 0;
+  const status = document.getElementById('farm-status').value;
+  
+  if(!name || !owner) { showToast("Farm Name and Owner are required!", "error"); return; }
+
+  if(idStr) { // UPDATE
+    const id = parseInt(idStr);
+    const idx = FARMS.findIndex(x => x.id === id);
+    if(idx > -1) {
+      FARMS[idx] = { ...FARMS[idx], name, owner, location, crop, size, status };
+      showToast("Farm updated successfully!");
+    }
+  } else { // CREATE
+    const newFarm = { id: nextFarmId++, name, owner, location, crop, size, status };
+    FARMS.push(newFarm);
+    showToast("New farm added successfully!");
+  }
+  renderFarmsTable();
+  closeModal('farm-form-modal');
+}
+
+function viewFarm(id){
+  const f = FARMS.find(x => x.id === id);
+  if(!f) return;
+  const content = `
+    <div class="view-row"><span class="view-label">Farm ID</span><span class="view-value">FRM-${f.id}</span></div>
+    <div class="view-row"><span class="view-label">Farm Name</span><span class="view-value">${f.name}</span></div>
+    <div class="view-row"><span class="view-label">Owner</span><span class="view-value">${f.owner}</span></div>
+    <div class="view-row"><span class="view-label">Location</span><span class="view-value">${f.location}</span></div>
+    <div class="view-row"><span class="view-label">Primary Crop</span><span class="view-value">${f.crop}</span></div>
+    <div class="view-row"><span class="view-label">Size</span><span class="view-value">${f.size} ha</span></div>
+    <div class="view-row"><span class="view-label">Status</span><span class="view-value">${statusBadge(f.status)}</span></div>
+  `;
+  document.getElementById('farm-view-content').innerHTML = content;
+  openModal('farm-view-modal');
+}
+
+function deleteFarm(id){
+  const f = FARMS.find(x => x.id === id);
+  if(!f) return;
+  customConfirm(`Are you sure you want to delete the farm: ${f.name}?`, () => {
+    FARMS = FARMS.filter(x => x.id !== id);
+    renderFarmsTable();
+    showToast(`Farm deleted.`, "info");
+  });
+}
+
+// Initial renders
+renderFarmersTable();
+renderFarmsTable();
+
+// Disease table rendering (Read Only)
+function renderTable(id,rows,cols){
+  const tbody=document.querySelector('#'+id+' tbody');
+  tbody.innerHTML=rows.map(r=>'<tr>'+cols.map(c=>c(r)).join('')+'</tr>').join('');
+}
+renderTable('disease-table',DISEASES,[
+  r=>`<td>${r.date}</td>`,r=>`<td>${r.farmer}</td>`,r=>`<td>${r.crop}</td>`,
+  r=>`<td><strong>${r.disease}</strong></td>`,r=>`<td>${confBadge(r.confidence)}</td>`,r=>`<td>${statusBadge(r.status)}</td>`
+]);
+
+
+// ===== RENDER CHARTS =====
+function renderChart(id,data,color){
+  const max=Math.max(...data.map(d=>d.v));
+  const el=document.getElementById(id);
+  el.innerHTML=data.map(d=>{
+    const h=Math.round((d.v/max)*100);
+    return `<div class="bar-col"><div class="bar-value">${d.v}</div><div class="bar" style="height:${h}%;background:linear-gradient(180deg,${color},rgba(0,0,0,0.2))"></div><div class="bar-label">${d.m}</div></div>`;
+  }).join('');
+}
+renderChart('reg-chart',REG_DATA,'var(--emerald)');
+renderChart('region-chart',REGION_DATA,'var(--blue)');
+renderChart('crop-chart',CROP_DATA,'var(--emerald)');
+renderChart('disease-chart',DISEASE_DATA,'var(--amber)');
+
+// ===== ACTIVITY FEED =====
+document.getElementById('activity-feed').innerHTML=ACTIVITIES.map(a=>
+  `<li class="activity-item"><div class="activity-dot" style="background:${a.color}"></div><div><div class="activity-text">${a.text}</div><div class="activity-time">${a.time}</div></div></li>`
+).join('');
+
+// ===== ANIMATED COUNTERS =====
+function animateCount(id,target){
+  let current=0;const step=Math.ceil(target/40);const el=document.getElementById(id);
+  const timer=setInterval(()=>{current+=step;if(current>=target){current=target;clearInterval(timer)}el.textContent=current.toLocaleString()},30);
+}
+// Removed farmer/farm counters from here, they are driven by the tables length now
+animateCount('s-scans',47);animateCount('s-communities',18);
+
+// ===== TABLE FILTER =====
+function filterTable(id,query){
+  const rows=document.querySelectorAll('#'+id+' tbody tr');
+  rows.forEach(r=>{r.style.display=r.textContent.toLowerCase().includes(query.toLowerCase())?'':'none'});
+}
+
+// ===== MODALS =====
+function openModal(id){document.getElementById(id).classList.add('active')}
+function closeModal(id){document.getElementById(id).classList.remove('active')}
+
+// ===== ERP SYNC =====
+async function triggerSync(){
+  const btn=document.getElementById('sync-btn');
+  btn.textContent='⏳ Syncing...';btn.disabled=true;
+  try{
+    const res=await fetch('http://localhost:8000/api/v1/erp-sync/trigger',{method:'POST'});
+    const data=await res.json();
+    document.getElementById('last-sync-time').textContent='Last sync: '+new Date().toISOString().replace('T',' ').slice(0,19)+' UTC';
+    showToast('Sync completed successfully!');
+  }catch(e){
+    showToast('Sync completed (mock). ERP backend not running.', 'info');
+  }
+  btn.textContent='🔄 Trigger Manual Sync';btn.disabled=false;
+}
+
+// ===== DATE =====
+document.getElementById('current-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+</script>
+</body>
+</html>

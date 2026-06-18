@@ -1,0 +1,30 @@
+{
+  "common": {
+    "welcome": "Welcome to Farmkiti",
+    "login": "Log In",
+    "register": "Register",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success!"
+  },
+  "auth": {
+    "phone": "Phone Number",
+    "password": "Password",
+    "forgot_password": "Forgot Password?",
+    "otp_prompt": "Enter the 6-digit code sent to your phone"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "my_farms": "My Farms",
+    "recent_activity": "Recent Activity",
+    "weather": "Weather Forecast"
+  },
+  "disease": {
+    "scan_crop": "Scan Crop",
+    "take_photo": "Take Photo",
+    "upload_gallery": "Upload from Gallery",
+    "results": "Analysis Results"
+  }
+}
