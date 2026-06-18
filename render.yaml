@@ -1,6 +1,7 @@
 services:
   - type: web
     name: farmkitti-api
+    plan: free
     env: python
     rootDir: backend
     buildCommand: "pip install -r requirements.txt && alembic upgrade head"
@@ -17,5 +18,6 @@ services:
 
 databases:
   - name: farmkitti-db
+    plan: free
     databaseName: farmkitti
     user: farmkitti_user
