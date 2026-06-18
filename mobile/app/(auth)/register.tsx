@@ -51,7 +51,11 @@ export default function RegisterScreen() {
       style={styles.container} 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <Header title={t('common.register')} showBack onBack={() => router.back()} />
+      <View style={{ alignItems: 'center', paddingTop: Spacing.xl * 2, paddingBottom: Spacing.md }}>
+        <Text style={{ fontSize: 48, marginBottom: 4 }}>🌱</Text>
+        <Text style={{ ...Typography.header, fontSize: 28, color: Colors.primary }}>Create Account</Text>
+        <Text style={{ ...Typography.body, color: Colors.textMuted }}>Join the Farmkitti Network</Text>
+      </View>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         
         <View style={styles.form}>

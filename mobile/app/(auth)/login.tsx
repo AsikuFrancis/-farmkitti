@@ -52,11 +52,14 @@ export default function LoginScreen() {
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
-          <Text style={styles.title}>Farmkiti</Text>
-          <Text style={styles.subtitle}>{t('common.welcome')}</Text>
+          <Text style={{ fontSize: 64, marginBottom: 8 }}>🌱</Text>
+          <Text style={styles.title}>Farmkitti</Text>
+          <Text style={styles.subtitle}>Smart Farming in Your Pocket</Text>
         </View>
 
-        <LanguageSelector />
+        <View style={{ alignItems: 'flex-end', marginBottom: 24 }}>
+          <LanguageSelector />
+        </View>
 
         <View style={styles.form}>
           <Input
