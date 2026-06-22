@@ -14,7 +14,7 @@ async def get_farmer_by_user_id(db: AsyncSession, user_id: UUID) -> Optional[Far
 async def create_farmer(db: AsyncSession, farmer_in: FarmerCreate, user_id: UUID) -> Farmer:
     db_obj = Farmer(
         user_id=user_id,
-        gender=farmer_in.gender,
+        gender=farmer_in.gender.value if hasattr(farmer_in.gender, 'value') else farmer_in.gender,
         age=farmer_in.age,
         household_size=farmer_in.household_size,
         farm_size_total=farmer_in.farm_size_total,

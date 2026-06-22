@@ -14,7 +14,7 @@ class Farmer(Base):
 
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     user_id = Column(String(36), ForeignKey("users.id"), unique=True, nullable=False)
-    gender = Column(Enum(Gender), nullable=True)
+    gender = Column(String(10), nullable=True)
     age = Column(Integer, nullable=True)
     household_size = Column(Integer, nullable=True)
     farm_size_total = Column(Float, nullable=True)
