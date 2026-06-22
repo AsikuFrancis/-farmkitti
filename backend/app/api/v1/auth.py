@@ -15,15 +15,17 @@ async def register(user_in: UserCreate, db: AsyncSession = Depends(get_db)) -> A
     """
     Register a new user.
     """
-    user = await auth_service.get_user_by_phone(db, phone=user_in.phone)
-    if user:
-        raise HTTPException(
-            status_code=400,
-            detail="The user with this phone number already exists in the system.",
-        )
     try:
+        user = await auth_service.get_user_by_phone(db, phone=user_in.phone)
+        if user:
+            raise HTTPException(
+                status_code=400,
+                detail="The user with this phone number already exists in the system.",
+            )
         user = await auth_service.create_user(db, user_in=user_in)
         return user
+    except HTTPException:
+        raise
     except Exception as e:
         import traceback
         raise HTTPException(
