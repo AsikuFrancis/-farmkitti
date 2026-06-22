@@ -1,16 +1,22 @@
+import { Platform } from 'react-native';
+
 export const Colors = {
-  primary: '#10B981', // Emerald green
-  primaryDark: '#059669',
-  primaryLight: '#D1FAE5',
-  secondary: '#F59E0B', // Warm amber
-  background: '#F9FAFB', // Light gray background
-  surface: '#FFFFFF', // White cards
-  text: '#1F2937', // Dark gray
-  textMuted: '#6B7280', // Medium gray
+  primary: '#059669', // Emerald 600
+  primaryDark: '#047857', // Emerald 700
+  primaryLight: '#D1FAE5', // Emerald 100
+  secondary: '#F59E0B', // Amber 500
+  secondaryLight: '#FEF3C7', // Amber 100
+  background: '#F8FAFC', // Slate 50 (softer, cooler white)
+  surface: '#FFFFFF', 
+  text: '#0F172A', // Slate 900
+  textMuted: '#64748B', // Slate 500
   error: '#EF4444',
-  success: '#22C55E',
+  errorLight: '#FEE2E2',
+  success: '#10B981',
+  successLight: '#D1FAE5',
   warning: '#F59E0B',
-  border: '#E5E7EB',
+  border: '#E2E8F0', // Slate 200
+  inputBg: '#F1F5F9', // Slate 100
 };
 
 export const Spacing = {
@@ -24,28 +30,56 @@ export const Spacing = {
 
 export const Typography = {
   header: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 28,
+    fontWeight: '800' as const,
+    letterSpacing: -0.5,
   },
   subheader: {
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: '700' as const,
+    letterSpacing: -0.3,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '600' as const,
   },
   body: {
     fontSize: 16,
-    fontWeight: 'normal',
+    fontWeight: '400' as const,
+    lineHeight: 24,
   },
   caption: {
     fontSize: 14,
-    fontWeight: 'normal',
+    fontWeight: '400' as const,
     color: Colors.textMuted,
   },
 };
 
 export const BorderRadius = {
-  sm: 4,
-  md: 8,
-  lg: 12,
-  xl: 16,
+  sm: 6,
+  md: 12,
+  lg: 16,
+  xl: 24,
   round: 9999,
+};
+
+export const Shadows = {
+  sm: Platform.select({
+    ios: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.05,
+      shadowRadius: 2,
+    },
+    android: { elevation: 2 },
+  }),
+  md: Platform.select({
+    ios: {
+      shadowColor: '#0F172A',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.08,
+      shadowRadius: 8,
+    },
+    android: { elevation: 4 },
+  }),
 };

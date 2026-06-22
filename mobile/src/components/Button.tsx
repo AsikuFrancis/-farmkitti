@@ -1,6 +1,7 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, ViewStyle, TextStyle } from 'react-native';
-import { Colors, Spacing, BorderRadius, Typography } from '../constants/theme';
+import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, ViewStyle, TextStyle, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Colors, Spacing, BorderRadius, Typography, Shadows } from '../constants/theme';
 
 interface ButtonProps {
   title: string;
@@ -49,10 +50,43 @@ export const Button: React.FC<ButtonProps> = ({
     return 'transparent';
   };
 
+  const renderContent = () => (
+    <>
+      {loading ? (
+        <ActivityIndicator color={getTextColor()} />
+      ) : (
+        <Text style={[styles.text, { color: getTextColor() }, textStyle]}>
+          {title}
+        </Text>
+      )}
+    </>
+  );
+
+  if (variant === 'primary' && !disabled) {
+    return (
+      <TouchableOpacity
+        style={[styles.buttonBase, style]}
+        onPress={onPress}
+        disabled={loading}
+        activeOpacity={0.8}
+      >
+        <LinearGradient
+          colors={[Colors.primary, Colors.primaryDark]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.gradientButton}
+        >
+          {renderContent()}
+        </LinearGradient>
+      </TouchableOpacity>
+    );
+  }
+
   return (
     <TouchableOpacity
       style={[
-        styles.button,
+        styles.buttonBase,
+        styles.standardButton,
         {
           backgroundColor: getBackgroundColor(),
           borderColor: getBorderColor(),
@@ -64,28 +98,34 @@ export const Button: React.FC<ButtonProps> = ({
       disabled={disabled || loading}
       activeOpacity={0.7}
     >
-      {loading ? (
-        <ActivityIndicator color={getTextColor()} />
-      ) : (
-        <Text style={[styles.text, { color: getTextColor() }, textStyle]}>
-          {title}
-        </Text>
-      )}
+      {renderContent()}
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  button: {
+  buttonBase: {
+    borderRadius: BorderRadius.md,
+    overflow: 'hidden',
+    ...Shadows.sm,
+  },
+  gradientButton: {
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.xl,
-    borderRadius: BorderRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 48,
+    minHeight: 52,
+  },
+  standardButton: {
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.xl,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 52,
   },
   text: {
     ...Typography.body,
-    fontWeight: '600',
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
 });

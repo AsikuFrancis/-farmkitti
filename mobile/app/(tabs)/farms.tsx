@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { Header } from '../../src/components/Header';
 import { EmptyState } from '../../src/components/EmptyState';
 import { Button } from '../../src/components/Button';
-import { Colors } from '../../src/constants/theme';
+import { Colors, Spacing } from '../../src/constants/theme';
 
 export default function FarmsScreen() {
   const router = useRouter();

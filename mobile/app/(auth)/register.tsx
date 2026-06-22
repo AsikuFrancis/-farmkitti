@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Button } from '../../src/components/Button';
 import { Input } from '../../src/components/Input';
-import { Header } from '../../src/components/Header';
 import { api } from '../../src/services/api';
 import { Colors, Spacing, Typography } from '../../src/constants/theme';
 
@@ -47,79 +47,143 @@ export default function RegisterScreen() {
   };
 
   return (
-    <KeyboardAvoidingView 
-      style={styles.container} 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <View style={{ alignItems: 'center', paddingTop: Spacing.xl * 2, paddingBottom: Spacing.md }}>
-        <Text style={{ fontSize: 48, marginBottom: 4 }}>🌱</Text>
-        <Text style={{ ...Typography.header, fontSize: 28, color: Colors.primary }}>Create Account</Text>
-        <Text style={{ ...Typography.body, color: Colors.textMuted }}>Join the Farmkitti Network</Text>
-      </View>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        
-        <View style={styles.form}>
-          <Input
-            label="Full Name"
-            placeholder="John Doe"
-            value={fullName}
-            onChangeText={setFullName}
-          />
-          <Input
-            label={t('auth.phone')}
-            placeholder="+211900000000"
-            value={phone}
-            onChangeText={setPhone}
-            keyboardType="phone-pad"
-            autoCapitalize="none"
-          />
-          <Input
-            label="County (Optional)"
-            placeholder="Juba"
-            value={county}
-            onChangeText={setCounty}
-          />
-          <Input
-            label={t('auth.password')}
-            placeholder="********"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
+    <View style={styles.mainContainer}>
+      <LinearGradient
+        colors={[Colors.primaryDark, Colors.primaryLight]}
+        style={styles.gradientBackground}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      />
+      <KeyboardAvoidingView 
+        style={styles.container} 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          <View style={styles.header}>
+            <View style={styles.logoContainer}>
+              <Text style={{ fontSize: 56 }}>🌱</Text>
+            </View>
+            <Text style={styles.title}>Create Account</Text>
+            <Text style={styles.subtitle}>Join the Farmkitti Network</Text>
+          </View>
           
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+          <View style={styles.formCard}>
+            <View style={styles.form}>
+              <Input
+                label="Full Name"
+                placeholder="John Doe"
+                value={fullName}
+                onChangeText={setFullName}
+              />
+              <Input
+                label={t('auth.phone')}
+                placeholder="+211900000000"
+                value={phone}
+                onChangeText={setPhone}
+                keyboardType="phone-pad"
+                autoCapitalize="none"
+              />
+              <Input
+                label="County (Optional)"
+                placeholder="Juba"
+                value={county}
+                onChangeText={setCounty}
+              />
+              <Input
+                label={t('auth.password')}
+                placeholder="********"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+              />
+              
+              {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-          <Button
-            title={t('common.register')}
-            onPress={handleRegister}
-            loading={loading}
-            style={styles.registerButton}
-          />
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+              <Button
+                title={t('common.register')}
+                onPress={handleRegister}
+                loading={loading}
+                style={styles.registerButton}
+              />
+
+              <Button
+                title={t('common.login')}
+                onPress={() => router.push('/login')}
+                variant="ghost"
+              />
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+    backgroundColor: Colors.primaryDark,
+  },
+  gradientBackground: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    height: '100%',
+  },
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   scrollContent: {
     flexGrow: 1,
+    justifyContent: 'space-between',
+  },
+  header: {
+    alignItems: 'center',
+    paddingTop: 80,
+    paddingBottom: 40,
+  },
+  logoContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    padding: Spacing.md,
+    borderRadius: 40,
+    marginBottom: Spacing.md,
+  },
+  title: {
+    ...Typography.header,
+    fontSize: 36,
+    color: Colors.surface,
+    marginBottom: Spacing.xs,
+  },
+  subtitle: {
+    ...Typography.body,
+    color: Colors.surface,
+    opacity: 0.9,
+  },
+  formCard: {
+    backgroundColor: Colors.background,
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
     padding: Spacing.xl,
+    paddingTop: Spacing.lg,
+    flex: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 10,
   },
   form: {
     width: '100%',
-    marginTop: Spacing.lg,
   },
   registerButton: {
-    marginTop: Spacing.xl,
+    marginTop: Spacing.md,
+    marginBottom: Spacing.sm,
   },
   errorText: {
     ...Typography.caption,
     color: Colors.error,
     marginBottom: Spacing.md,
+    textAlign: 'center',
   },
 });

@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Colors, Spacing, Typography } from '../constants/theme';
-// import { Ionicons } from '@expo/vector-icons'; // will install later if needed
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Platform } from 'react-native';
+import { Colors, Spacing, Typography, Shadows } from '../constants/theme';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 interface HeaderProps {
   title: string;
@@ -12,25 +12,33 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ title, showBack, onBack, rightElement }) => {
   return (
-    <View style={styles.container}>
-      <View style={styles.left}>
-        {showBack && (
-          <TouchableOpacity onPress={onBack} style={styles.backButton}>
-             <Text style={styles.backText}>{'<'}</Text>
-          </TouchableOpacity>
-        )}
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        <View style={styles.left}>
+          {showBack && (
+            <TouchableOpacity onPress={onBack} style={styles.backButton}>
+              <MaterialCommunityIcons name="arrow-left" size={24} color={Colors.text} />
+            </TouchableOpacity>
+          )}
+        </View>
+        <View style={styles.center}>
+          <Text style={styles.title} numberOfLines={1}>
+            {title}
+          </Text>
+        </View>
+        <View style={styles.right}>{rightElement}</View>
       </View>
-      <View style={styles.center}>
-        <Text style={styles.title} numberOfLines={1}>
-          {title}
-        </Text>
-      </View>
-      <View style={styles.right}>{rightElement}</View>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    backgroundColor: Colors.surface,
+    ...Shadows.sm,
+    zIndex: 10,
+    paddingTop: Platform.OS === 'android' ? 24 : 0,
+  },
   container: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -38,15 +46,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
     backgroundColor: Colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   left: {
     flex: 1,
     alignItems: 'flex-start',
   },
   center: {
-    flex: 2,
+    flex: 3,
     alignItems: 'center',
   },
   right: {
@@ -54,14 +60,11 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   title: {
-    ...Typography.subheader,
+    ...Typography.title,
     color: Colors.text,
   },
   backButton: {
     padding: Spacing.xs,
+    marginLeft: -Spacing.xs,
   },
-  backText: {
-    fontSize: 24,
-    color: Colors.primary,
-  }
 });

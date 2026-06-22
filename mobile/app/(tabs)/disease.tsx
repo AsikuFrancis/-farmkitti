@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Header } from '../../src/components/Header';
 import { Button } from '../../src/components/Button';
 import { Card } from '../../src/components/Card';
+import { EmptyState } from '../../src/components/EmptyState';
 import { Colors, Spacing, Typography } from '../../src/constants/theme';
 
 export default function DiseaseScreen() {
@@ -27,9 +28,11 @@ export default function DiseaseScreen() {
         </Card>
 
         <Text style={styles.historyTitle}>Recent Scans</Text>
-        <Card>
-          <Text style={{color: Colors.textMuted, textAlign: 'center'}}>No recent scans.</Text>
-        </Card>
+        <EmptyState
+          title="No Scans Yet"
+          message="Your scan history will appear here once you take a photo of a plant."
+          icon="history"
+        />
 
       </ScrollView>
     </View>
@@ -42,7 +45,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   content: {
-    padding: Spacing.md,
+    padding: Spacing.xl,
   },
   scanCard: {
     alignItems: 'center',

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Button } from '../../src/components/Button';
 import { Input } from '../../src/components/Input';
 import { LanguageSelector } from '../../src/components/LanguageSelector';
@@ -46,81 +47,123 @@ export default function LoginScreen() {
   };
 
   return (
-    <KeyboardAvoidingView 
-      style={styles.container} 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.header}>
-          <Text style={{ fontSize: 64, marginBottom: 8 }}>🌱</Text>
-          <Text style={styles.title}>Farmkitti</Text>
-          <Text style={styles.subtitle}>Smart Farming in Your Pocket</Text>
-        </View>
+    <View style={styles.mainContainer}>
+      <LinearGradient
+        colors={[Colors.primaryDark, Colors.primaryLight]}
+        style={styles.gradientBackground}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+      />
+      <KeyboardAvoidingView 
+        style={styles.container} 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          <View style={styles.header}>
+            <View style={styles.logoContainer}>
+              <Text style={{ fontSize: 56 }}>🌱</Text>
+            </View>
+            <Text style={styles.title}>Farmkitti</Text>
+            <Text style={styles.subtitle}>Smart Farming in Your Pocket</Text>
+          </View>
 
-        <View style={{ alignItems: 'flex-end', marginBottom: 24 }}>
-          <LanguageSelector />
-        </View>
+          <View style={styles.formCard}>
+            <View style={{ alignItems: 'flex-end', marginBottom: Spacing.md }}>
+              <LanguageSelector />
+            </View>
 
-        <View style={styles.form}>
-          <Input
-            label={t('auth.phone')}
-            placeholder="+211900000000"
-            value={phone}
-            onChangeText={setPhone}
-            keyboardType="phone-pad"
-            autoCapitalize="none"
-          />
-          <Input
-            label={t('auth.password')}
-            placeholder="********"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
-          
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+            <View style={styles.form}>
+              <Input
+                label={t('auth.phone')}
+                placeholder="+211900000000"
+                value={phone}
+                onChangeText={setPhone}
+                keyboardType="phone-pad"
+                autoCapitalize="none"
+              />
+              <Input
+                label={t('auth.password')}
+                placeholder="********"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+              />
+              
+              {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-          <Button
-            title={t('common.login')}
-            onPress={handleLogin}
-            loading={loading}
-            style={styles.loginButton}
-          />
+              <Button
+                title={t('common.login')}
+                onPress={handleLogin}
+                loading={loading}
+                style={styles.loginButton}
+              />
 
-          <Button
-            title={t('common.register')}
-            onPress={() => router.push('/register')}
-            variant="ghost"
-          />
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+              <Button
+                title={t('common.register')}
+                onPress={() => router.push('/register')}
+                variant="ghost"
+              />
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+    backgroundColor: Colors.primaryDark,
+  },
+  gradientBackground: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    height: '100%',
+  },
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   scrollContent: {
     flexGrow: 1,
-    justifyContent: 'center',
-    padding: Spacing.xl,
+    justifyContent: 'space-between',
   },
   header: {
     alignItems: 'center',
-    marginBottom: Spacing.xl,
+    paddingTop: 80,
+    paddingBottom: 40,
+  },
+  logoContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    padding: Spacing.md,
+    borderRadius: 40,
+    marginBottom: Spacing.md,
   },
   title: {
     ...Typography.header,
     fontSize: 36,
-    color: Colors.primary,
+    color: Colors.surface,
     marginBottom: Spacing.xs,
   },
   subtitle: {
-    ...Typography.subheader,
-    color: Colors.textMuted,
+    ...Typography.body,
+    color: Colors.surface,
+    opacity: 0.9,
+  },
+  formCard: {
+    backgroundColor: Colors.background,
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
+    padding: Spacing.xl,
+    paddingTop: Spacing.lg,
+    flex: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 10,
   },
   form: {
     width: '100%',
