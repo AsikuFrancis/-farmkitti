@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Column, String, ForeignKey, Float, DateTime, Boolean, Date, JSON, func
+from sqlalchemy import Column, String, ForeignKey, Float, DateTime, Boolean, Date, JSON, func, Uuid
 from sqlalchemy.orm import relationship
 from app.database import Base
 import enum
@@ -13,8 +13,8 @@ class CropStatus(str, enum.Enum):
 class Farm(Base):
     __tablename__ = "farms"
 
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    farmer_id = Column(String(36), ForeignKey("farmers.id"), nullable=False)
+    id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    farmer_id = Column(Uuid(as_uuid=True), ForeignKey("farmers.id"), nullable=False)
     farm_name = Column(String(255), nullable=False)
     size = Column(Float, nullable=False)  # in hectares
     latitude = Column(Float, nullable=False)
@@ -31,8 +31,8 @@ class Farm(Base):
 class Crop(Base):
     __tablename__ = "crops"
 
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    farm_id = Column(String(36), ForeignKey("farms.id"), nullable=False)
+    id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    farm_id = Column(Uuid(as_uuid=True), ForeignKey("farms.id"), nullable=False)
     crop_type = Column(String(100), nullable=False)
     planting_date = Column(Date, nullable=False)
     expected_harvest_date = Column(Date, nullable=True)

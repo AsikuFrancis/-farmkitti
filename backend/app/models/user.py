@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Column, String, Boolean, Float, DateTime, Enum, Text, func
+from sqlalchemy import Column, String, Boolean, Float, DateTime, Enum, Text, func, Uuid
 from sqlalchemy.orm import relationship
 from app.database import Base
 import enum
@@ -14,7 +14,7 @@ class UserRole(str, enum.Enum):
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     full_name = Column(String(255), nullable=False)
     phone = Column(String(20), unique=True, nullable=False, index=True)
     email = Column(String(255), nullable=True)

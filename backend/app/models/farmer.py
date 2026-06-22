@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Column, Integer, String, ForeignKey, Float, Text
+from sqlalchemy import Column, Integer, String, ForeignKey, Float, Text, Uuid
 from sqlalchemy.orm import relationship
 from app.database import Base
 import enum
@@ -12,8 +12,8 @@ class Gender(str, enum.Enum):
 class Farmer(Base):
     __tablename__ = "farmers"
 
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id = Column(String(36), ForeignKey("users.id"), unique=True, nullable=False)
+    id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(Uuid(as_uuid=True), ForeignKey("users.id"), unique=True, nullable=False)
     gender = Column(String(10), nullable=True)
     age = Column(Integer, nullable=True)
     household_size = Column(Integer, nullable=True)
