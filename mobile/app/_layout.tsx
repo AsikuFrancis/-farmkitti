@@ -16,7 +16,7 @@ export default function RootLayout() {
       router.replace('/(auth)/login');
     } else if (user && inAuthGroup) {
       // Redirect away from the sign-in page.
-      router.replace('/(tabs)');
+      router.replace('/(tabs)/dashboard');
     }
   }, [user, segments]);
 
