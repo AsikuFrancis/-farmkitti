@@ -11,6 +11,8 @@ import { Colors, Spacing, Typography } from '../../src/constants/theme';
 
 export default function OTPScreen() {
   const { phone } = useLocalSearchParams<{ phone: string }>();
+  // Fix URL decoding issue where '+' is turned into a space
+  const safePhone = phone?.replace(' ', '+') || phone;
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -30,9 +32,9 @@ export default function OTPScreen() {
     
     try {
       // API call to verify OTP
-      const response = await api.post('/auth/verify-otp', { phone, otp });
+      const response = await api.post('/auth/verify-otp', { phone: safePhone, otp });
       
-      const mockUser = { id: '1', full_name: 'Farmer', phone: phone || '', role: 'farmer' };
+      const mockUser = { id: '1', full_name: 'Farmer', phone: safePhone || '', role: 'farmer' };
       setAuth(mockUser, response.data.access_token || 'mock_token');
       
     } catch (err: any) {
@@ -51,7 +53,7 @@ export default function OTPScreen() {
       <View style={styles.content}>
         <Text style={styles.title}>Verification</Text>
         <Text style={styles.subtitle}>
-          {t('auth.otp_prompt')} {phone}
+          {t('auth.otp_prompt')} {safePhone}
         </Text>
 
         <View style={styles.form}>
