@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, ViewStyle, ViewProps } from 'react-native';
-import { Colors, Spacing, BorderRadius } from '../constants/theme';
+import { Colors, Spacing, BorderRadius, Shadows } from '../constants/theme';
 
 interface CardProps extends ViewProps {
   style?: ViewStyle;
