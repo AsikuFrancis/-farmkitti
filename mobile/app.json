@@ -1,11 +1,15 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
+    "name": "FarmKitti",
+    "slug": "farmkitti",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#1B5E20",
+      "resizeMode": "contain"
+    },
     "ios": {
       "supportsTablet": true
     },
