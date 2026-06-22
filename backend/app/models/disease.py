@@ -20,7 +20,7 @@ class DiseaseReport(Base):
     thumbnail_url = Column(String(500), nullable=True)
     prediction = Column(String(255), nullable=False)
     confidence = Column(Float, nullable=False)
-    severity = Column(Enum(SeverityLevel), nullable=False)
+    severity = Column(Enum(SeverityLevel, name="severitylevel"), nullable=False)
     recommendation = Column(Text, nullable=True)
     preventive_measures = Column(Text, nullable=True)
     model_version = Column(String(50), nullable=True)
