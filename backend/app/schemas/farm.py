@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional, List, Dict, Any
 from datetime import datetime, date
+from app.models.farm import CropStatus
 
 class CropBase(BaseModel):
     crop_type: str
@@ -9,7 +10,7 @@ class CropBase(BaseModel):
     actual_harvest_date: Optional[date] = None
     irrigation_type: Optional[str] = None
     soil_type: Optional[str] = None
-    status: str = "planned"
+    status: CropStatus = CropStatus.planned
 
 class CropCreate(CropBase):
     pass

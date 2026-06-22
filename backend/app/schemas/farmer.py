@@ -1,9 +1,10 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional, List
 from datetime import datetime
+from app.models.farmer import Gender
 
 class FarmerBase(BaseModel):
-    gender: Optional[str] = None
+    gender: Optional[Gender] = None
     age: Optional[int] = None
     household_size: Optional[int] = None
     farm_size_total: Optional[float] = None

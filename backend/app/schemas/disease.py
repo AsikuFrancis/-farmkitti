@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from datetime import datetime
+from app.models.disease import SeverityLevel
 
 class DiseaseReportBase(BaseModel):
     farm_id: Optional[str] = None
@@ -18,7 +19,7 @@ class DiseaseReportInDBBase(DiseaseReportBase):
     thumbnail_url: Optional[str] = None
     prediction: str
     confidence: float
-    severity: str
+    severity: SeverityLevel
     recommendation: Optional[str] = None
     preventive_measures: Optional[str] = None
     model_version: Optional[str] = None

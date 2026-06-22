@@ -39,7 +39,7 @@ class Crop(Base):
     actual_harvest_date = Column(Date, nullable=True)
     irrigation_type = Column(String(50), nullable=True)
     soil_type = Column(String(50), nullable=True)
-    status = Column(String(20), default="planted")
+    status = Column(Enum(CropStatus), default=CropStatus.planted)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     # Relationships
