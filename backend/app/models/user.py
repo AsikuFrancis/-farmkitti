@@ -18,7 +18,7 @@ class User(Base):
     full_name = Column(String(255), nullable=False)
     phone = Column(String(20), unique=True, nullable=False, index=True)
     email = Column(String(255), nullable=True)
-    role = Column(String(30), default="farmer", nullable=False)
+    role = Column(Enum(UserRole), default=UserRole.farmer, nullable=False)
     password_hash = Column(String(255), nullable=False)
     county = Column(String(100), nullable=True)
     payam = Column(String(100), nullable=True)

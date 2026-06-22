@@ -43,7 +43,7 @@ async def process_disease_detection(
         image_url=image_url,
         prediction=prediction,
         confidence=confidence,
-        severity=rec_data["severity"].value if hasattr(rec_data["severity"], 'value') else rec_data["severity"],
+        severity=rec_data["severity"],
         recommendation=rec_data["recommendation"],
         preventive_measures=rec_data["preventive_measures"],
         model_version=disease_model.version
