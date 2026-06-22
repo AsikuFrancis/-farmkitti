@@ -21,8 +21,15 @@ async def register(user_in: UserCreate, db: AsyncSession = Depends(get_db)) -> A
             status_code=400,
             detail="The user with this phone number already exists in the system.",
         )
-    user = await auth_service.create_user(db, user_in=user_in)
-    return user
+    try:
+        user = await auth_service.create_user(db, user_in=user_in)
+        return user
+    except Exception as e:
+        import traceback
+        raise HTTPException(
+            status_code=500,
+            detail=f"Registration failed: {str(e)}\nTraceback: {traceback.format_exc()}"
+        )
 
 @router.post("/login", response_model=Token)
 async def login(login_data: LoginRequest, db: AsyncSession = Depends(get_db)) -> Any:
