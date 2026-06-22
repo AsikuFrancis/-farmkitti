@@ -9,7 +9,7 @@ class UserBase(BaseModel):
     full_name: str
     phone: str
     email: Optional[str] = None
-    role: UserRole = UserRole.farmer
+    role: str = "farmer"
     county: Optional[str] = None
     payam: Optional[str] = None
     boma: Optional[str] = None
@@ -32,7 +32,7 @@ class UserUpdate(BaseModel):
     language_pref: Optional[str] = None
 
 class UserInDBBase(UserBase):
-    id: str
+    id: UUID
     is_active: bool
     language_pref: str
     created_at: datetime
