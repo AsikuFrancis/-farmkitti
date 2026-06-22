@@ -57,7 +57,7 @@ async def create_crop(db: AsyncSession, crop_in: CropCreate, farm_id: UUID) -> C
         actual_harvest_date=crop_in.actual_harvest_date,
         irrigation_type=crop_in.irrigation_type,
         soil_type=crop_in.soil_type,
-        status=crop_in.status
+        status=crop_in.status.value if hasattr(crop_in.status, 'value') else crop_in.status
     )
     db.add(db_obj)
     await db.commit()

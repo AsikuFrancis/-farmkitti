@@ -15,7 +15,7 @@ async def create_user(db: AsyncSession, user_in: UserCreate) -> User:
         full_name=user_in.full_name,
         phone=user_in.phone,
         email=user_in.email,
-        role=user_in.role,
+        role=user_in.role.value if hasattr(user_in.role, 'value') else user_in.role,
         password_hash=get_password_hash(user_in.password),
         county=user_in.county,
         payam=user_in.payam,
