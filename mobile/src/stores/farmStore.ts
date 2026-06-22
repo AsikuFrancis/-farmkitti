@@ -51,6 +51,17 @@ export const useFarmStore = create<FarmStore>((set, get) => ({
         set({ farms: serverFarms });
       } catch (error) {
         console.error('API fetch failed, relying on local data', error);
+        
+        // Mock data fallback if DB is not ready
+        setTimeout(() => {
+          set({ 
+            farms: [
+              { id: '1', name: 'North Field', size: 5 },
+              { id: '2', name: 'River Side', size: 2.5 }
+            ] as Farm[], 
+            loading: false 
+          });
+        }, 1000);
       }
     }
     

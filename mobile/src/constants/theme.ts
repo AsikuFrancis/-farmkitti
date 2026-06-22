@@ -6,6 +6,7 @@ export const Colors = {
   primaryLight: '#D1FAE5', // Emerald 100
   secondary: '#F59E0B', // Amber 500
   secondaryLight: '#FEF3C7', // Amber 100
+  info: '#3B82F6', // Blue 500
   background: '#F8FAFC', // Slate 50 (softer, cooler white)
   surface: '#FFFFFF', 
   text: '#0F172A', // Slate 900

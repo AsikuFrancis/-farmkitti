@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, RefreshControl } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Header } from '../../src/components/Header';
 import { Card } from '../../src/components/Card';
 import { Colors, Spacing, Typography } from '../../src/constants/theme';
@@ -8,6 +10,7 @@ import { api } from '../../src/services/api';
 export default function WeatherScreen() {
   const [weather, setWeather] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     fetchWeather();
@@ -15,7 +18,6 @@ export default function WeatherScreen() {
 
   const fetchWeather = async () => {
     try {
-      // Mock coordinates for Juba, South Sudan
       const response = await api.get('/weather/forecast?latitude=4.8517&longitude=31.5825&county=Juba');
       setWeather(response.data);
     } catch (error) {
@@ -25,7 +27,19 @@ export default function WeatherScreen() {
     }
   };
 
-  if (loading) {
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchWeather();
+    setRefreshing(false);
+  };
+
+  const getWeatherIcon = (precip: number) => {
+    if (precip > 10) return "weather-pouring";
+    if (precip > 0) return "weather-rainy";
+    return "weather-sunny";
+  };
+
+  if (loading && !weather) {
     return (
       <View style={[styles.container, styles.center]}>
         <ActivityIndicator size="large" color={Colors.primary} />
@@ -36,30 +50,74 @@ export default function WeatherScreen() {
   return (
     <View style={styles.container}>
       <Header title="Weather Intelligence" />
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView 
+        contentContainerStyle={styles.content}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.primary} />}
+      >
         
         {weather && (
           <>
-            <Card style={styles.currentWeatherCard}>
-              <Text style={styles.county}>{weather.county}</Text>
-              <Text style={styles.temperature}>{weather.current_temperature}°C</Text>
-              <View style={styles.detailsRow}>
-                <Text style={styles.detailsText}>Humidity: {weather.current_humidity}%</Text>
-                <Text style={styles.detailsText}>Wind: {weather.current_wind_speed} km/h</Text>
+            <LinearGradient
+              colors={[Colors.secondary, Colors.primary]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.currentWeatherCard}
+            >
+              <View style={styles.currentWeatherHeader}>
+                <Text style={styles.county}>{weather.county}</Text>
+                <MaterialCommunityIcons name="map-marker" size={20} color={Colors.surface} />
               </View>
-            </Card>
+              
+              <View style={styles.mainTempContainer}>
+                <MaterialCommunityIcons 
+                  name={getWeatherIcon(weather.daily_forecasts?.[0]?.precipitation_sum || 0)} 
+                  size={64} 
+                  color={Colors.surface} 
+                />
+                <Text style={styles.temperature}>{weather.current_temperature}°</Text>
+              </View>
+
+              <View style={styles.detailsRow}>
+                <View style={styles.detailBox}>
+                  <MaterialCommunityIcons name="water-percent" size={20} color={Colors.surface} />
+                  <Text style={styles.detailsText}>{weather.current_humidity}%</Text>
+                  <Text style={styles.detailsLabel}>Humidity</Text>
+                </View>
+                <View style={styles.detailBox}>
+                  <MaterialCommunityIcons name="weather-windy" size={20} color={Colors.surface} />
+                  <Text style={styles.detailsText}>{weather.current_wind_speed} km/h</Text>
+                  <Text style={styles.detailsLabel}>Wind</Text>
+                </View>
+              </View>
+            </LinearGradient>
 
             <Text style={styles.sectionTitle}>7-Day Forecast</Text>
             
-            {weather.daily_forecasts.map((day: any, index: number) => (
-              <Card key={index} style={styles.forecastCard}>
-                <Text style={styles.date}>{new Date(day.date).toLocaleDateString(undefined, {weekday: 'short', month: 'short', day: 'numeric'})}</Text>
-                <View style={styles.forecastInfo}>
-                  <Text style={styles.tempHighLow}>{day.temperature_max}° / {day.temperature_min}°</Text>
-                  <Text style={styles.precip}>{day.precipitation_sum > 0 ? `🌧️ ${day.precipitation_sum}mm` : '☀️'}</Text>
+            <View style={styles.forecastContainer}>
+              {weather.daily_forecasts.map((day: any, index: number) => (
+                <View key={index} style={styles.forecastRow}>
+                  <Text style={styles.date}>
+                    {index === 0 ? 'Today' : new Date(day.date).toLocaleDateString(undefined, {weekday: 'short', month: 'short', day: 'numeric'})}
+                  </Text>
+                  
+                  <View style={styles.forecastCenter}>
+                    <MaterialCommunityIcons 
+                      name={getWeatherIcon(day.precipitation_sum)} 
+                      size={24} 
+                      color={day.precipitation_sum > 0 ? Colors.secondary : Colors.primaryDark} 
+                    />
+                    <Text style={styles.precipText}>
+                      {day.precipitation_sum > 0 ? `${day.precipitation_sum}mm` : 'Clear'}
+                    </Text>
+                  </View>
+
+                  <View style={styles.tempHighLow}>
+                    <Text style={styles.tempHigh}>{day.temperature_max}°</Text>
+                    <Text style={styles.tempLow}>{day.temperature_min}°</Text>
+                  </View>
                 </View>
-              </Card>
-            ))}
+              ))}
+            </View>
           </>
         )}
 
@@ -78,61 +136,113 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   content: {
-    padding: Spacing.md,
+    padding: Spacing.xl,
+    paddingBottom: Spacing.xxl,
   },
   currentWeatherCard: {
-    alignItems: 'center',
+    borderRadius: 24,
     padding: Spacing.xl,
-    backgroundColor: Colors.primary,
     marginBottom: Spacing.xl,
+    shadowColor: Colors.primaryDark,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  currentWeatherHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   county: {
-    ...Typography.subheader,
+    ...Typography.title,
     color: Colors.surface,
-    marginBottom: Spacing.sm,
+  },
+  mainTempContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.lg,
+    marginVertical: Spacing.xl,
   },
   temperature: {
     ...Typography.header,
-    fontSize: 48,
+    fontSize: 64,
     color: Colors.surface,
   },
   detailsRow: {
     flexDirection: 'row',
-    gap: Spacing.lg,
-    marginTop: Spacing.md,
+    justifyContent: 'space-around',
+    marginTop: Spacing.sm,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderRadius: 16,
+    padding: Spacing.md,
+  },
+  detailBox: {
+    alignItems: 'center',
   },
   detailsText: {
-    ...Typography.body,
+    ...Typography.subheader,
     color: Colors.surface,
-    opacity: 0.9,
+    marginTop: 4,
+  },
+  detailsLabel: {
+    ...Typography.caption,
+    color: Colors.surface,
+    opacity: 0.8,
   },
   sectionTitle: {
-    ...Typography.subheader,
-    marginBottom: Spacing.sm,
+    ...Typography.title,
+    marginBottom: Spacing.md,
+    color: Colors.text,
   },
-  forecastCard: {
+  forecastContainer: {
+    backgroundColor: Colors.surface,
+    borderRadius: 24,
+    padding: Spacing.xl,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  forecastRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: Spacing.sm,
-    marginBottom: Spacing.xs,
+    paddingVertical: Spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
   },
   date: {
     ...Typography.body,
     fontWeight: '600',
     flex: 1,
   },
-  forecastInfo: {
+  forecastCenter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    gap: Spacing.sm,
+  },
+  precipText: {
+    ...Typography.caption,
+    color: Colors.textMuted,
+  },
+  tempHighLow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.md,
+    flex: 1,
+    justifyContent: 'flex-end',
   },
-  tempHighLow: {
+  tempHigh: {
     ...Typography.body,
+    fontWeight: '700',
+    color: Colors.text,
   },
-  precip: {
+  tempLow: {
     ...Typography.body,
-    width: 60,
-    textAlign: 'right',
+    color: Colors.textMuted,
   }
 });

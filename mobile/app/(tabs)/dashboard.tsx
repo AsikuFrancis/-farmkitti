@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -14,11 +14,30 @@ export default function DashboardScreen() {
   const { t } = useTranslation();
   const { user } = useAuthStore();
   const router = useRouter();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    // Simulate refresh
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1500);
+  };
+
+  const QUICK_ACTIONS = [
+    { title: 'Add Farm', icon: 'sprout', route: '/farms/add', color: Colors.primary },
+    { title: 'Disease', icon: 'leaf-off', route: '/disease', color: Colors.error },
+    { title: 'Weather', icon: 'weather-sunny', route: '/weather', color: Colors.secondary },
+    { title: 'Community', icon: 'account-group', route: '/community', color: Colors.info },
+  ];
 
   return (
     <View style={styles.container}>
       <Header title="Farmkiti" />
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView 
+        contentContainerStyle={styles.content}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.primary} />}
+      >
         <View style={styles.greetingContainer}>
           <View>
             <Text style={styles.greetingSub}>Welcome back,</Text>
@@ -47,6 +66,21 @@ export default function DashboardScreen() {
             style={{marginTop: Spacing.md}}
           />
         </LinearGradient>
+
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.quickActionsContainer}>
+          {QUICK_ACTIONS.map((action, index) => (
+            <TouchableOpacity 
+              key={index} 
+              style={styles.quickActionBtn}
+              onPress={() => router.push(action.route as any)}
+            >
+              <View style={[styles.quickActionIcon, { backgroundColor: action.color + '20' }]}>
+                <MaterialCommunityIcons name={action.icon as any} size={28} color={action.color} />
+              </View>
+              <Text style={styles.quickActionText}>{action.title}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
 
         <Text style={styles.sectionTitle}>{t('dashboard.my_farms')}</Text>
         <TouchableOpacity activeOpacity={0.7} onPress={() => router.push('/farms')}>
@@ -178,4 +212,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: Spacing.md,
   },
+  quickActionsContainer: {
+    paddingVertical: Spacing.md,
+    gap: Spacing.lg,
+    marginBottom: Spacing.sm,
+  },
+  quickActionBtn: {
+    alignItems: 'center',
+    width: 76,
+  },
+  quickActionIcon: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.xs,
+  },
+  quickActionText: {
+    ...Typography.caption,
+    textAlign: 'center',
+    color: Colors.text,
+  }
 });
